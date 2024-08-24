@@ -54,19 +54,19 @@ public class ColorDetectionOpMode extends OpMode {
         // the domains are: ([0, 180], [0, 255], [0, 255])
         // this is tuned to detect red, so you will need to experiment to fine tune it for your robot
         // and experiment to fine tune it for blue
-        Scalar lower = new Scalar(0,100,77); // the lower hsv threshold for your detection
-        Scalar upper = new Scalar(0,144,255); // the upper hsv threshold for your detection
+        Scalar lower = new Scalar(0,50,50); // the lower hsv threshold for your detection
+        Scalar upper = new Scalar(50,255,255); // the upper hsv threshold for your detection
         double minArea = 100; // the minimum area for the detection to consider for your prop
 
         colourMassDetectionProcessor = new ColourMassDetectionProcessor(
                 lower,
                 upper,
                 () -> minArea, // these are lambda methods, in case we want to change them while the match is running, for us to tune them or something
-                () -> 213, // the left dividing line, in this case the left third of the frame
+                () -> 100, // the left dividing line, in this case the left third of the frame
                 () -> 400 // the left dividing line, in this case the right third of the frame
         );
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam1")) // the camera on your robot is named "Webcam 1" by default
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default
                 .addProcessor(colourMassDetectionProcessor)
                 .build();
 
