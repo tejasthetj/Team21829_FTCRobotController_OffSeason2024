@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -63,7 +63,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Robot: Auto Drive By Encoder", group="Robot")
 @Disabled
-public class RobotAutoDriveByEncoder_Linear extends LinearOpMode {
+public class Test_Srithan extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftDrive;
