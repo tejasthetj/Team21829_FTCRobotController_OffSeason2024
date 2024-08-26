@@ -212,8 +212,9 @@ public class Gyro extends LinearOpMode {
         turnToHeading( TURN_SPEED,   0.0);               // Turn  CW  to 0 Degrees
         holdHeading( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for 1 second
 
-        driveStraight(DRIVE_SPEED,-48.0, 0.0);    // Drive in Reverse 48" (should return to approx. staring position)
-
+        driveStraight(DRIVE_SPEED,-24.0, 0.0);// Drive in Reverse 48" (should return to approx. staring position)
+        turnToHeading( TURN_SPEED,   180);               // Turn  CW  to 0 Degrees
+        holdHeading( TURN_SPEED,   180, 0.5);
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // Pause to display last telemetry message.
