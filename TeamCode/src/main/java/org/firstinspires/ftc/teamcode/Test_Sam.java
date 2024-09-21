@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -95,7 +96,7 @@ public class Test_Sam extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double SPEED_GAIN  =  0.1  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
@@ -106,10 +107,14 @@ public class Test_Sam extends LinearOpMode
     private DcMotor leftFrontDrive;  //  Used to control the left front drive wheel
     private DcMotor rightFrontDrive;  //  Used to control the right front drive wheel
     private DcMotor leftBackDrive;  //  Used to control the left back drive wheel
-    private DcMotor rightBackDrive;  //  Used to control the right back drive wheel
+    private DcMotor rightBackDrive;
+    private DcMotor vertical1;  //  Used to control the left front drive wheel
+    private DcMotor vertical2;  //  Used to control the right front drive wheel
+    private DcMotor horizontal1;  //  Used to control the left back drive wheel
+    private DcMotor horizontal2;//  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static final int DESIRED_TAG_ID = 1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -127,19 +132,24 @@ public class Test_Sam extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_Motor1");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_Motor1");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_Motor2");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_Motor2");
-
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left front");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right front");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left rear");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right rear");
+        horizontal1 = hardwareMap.get(DcMotor.class,"horizontal 1");
+        horizontal2 = hardwareMap.get(DcMotor.class,"horizontal 2");
+        vertical1 = hardwareMap.get(DcMotor.class,"vertical 1");
+        vertical2 = hardwareMap.get(DcMotor.class,"vertical 2");
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        vertical2.setDirection(DcMotor.Direction.REVERSE);
+        horizontal2.setDirection(DcMotor.Direction.REVERSE);
         if (USE_WEBCAM)
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
 
@@ -236,6 +246,24 @@ public class Test_Sam extends LinearOpMode
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
+        if (gamepad1.a) {
+            setelevator(1, 0);
+        }
+        else if (gamepad1.b) {
+            setelevator(0,1);
+
+        }
+        else if (gamepad1.x) {
+            setelevator(-1,0);
+        }
+
+        else if (gamepad1.y){
+            setelevator(0,-1);
+        }
+        else {
+
+            setelevator(0,0);
+        }
 
         if (max > 1.0) {
             leftFrontPower /= max;
@@ -280,7 +308,13 @@ public class Test_Sam extends LinearOpMode
                     .build();
         }
     }
+    private void setelevator (double verticalpower, double horizontalpower) {
 
+        vertical1.setPower(verticalpower);
+        vertical2.setPower(verticalpower);
+        horizontal1.setPower(horizontalpower);
+        horizontal2.setPower(horizontalpower);
+    }
     /*
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
